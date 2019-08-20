@@ -8,11 +8,11 @@ import pytest
 import random
 import scipy.stats
 matplotlib.use('Agg')  # Needed for matplotlib to run in Travis
-import convoys
-import convoys.plotting
-import convoys.regression
-import convoys.single
-import convoys.utils
+import careovoys
+import careovoys.plotting
+import careovoys.regression
+import careovoys.single
+import careovoys.utils
 
 
 def sample_weibull(k, lambd):
@@ -45,13 +45,13 @@ def test_kaplan_meier_model():
         'group': 1
     })
     df['now'] = now
-    unit, groups, (G, B, T) = convoys.utils.get_arrays(
+    unit, groups, (G, B, T) = careovoys.utils.get_arrays(
         df,
         converted='converted_at',
         created='created_at',
         unit='days'
     )
-    m = convoys.multi.KaplanMeier()
+    m = careovoys.multi.KaplanMeier()
     m.fit(G, B, T)
     assert m.cdf(0, 9) == 0.75
 
@@ -63,7 +63,7 @@ def test_exponential_regression_model(c=0.3, lambd=0.1, n=10000):
     N = scipy.stats.uniform.rvs(scale=5./lambd, size=(n,))  # time now
     E = scipy.stats.expon.rvs(scale=1./lambd, size=(n,))  # time of event
     B, T = generate_censored_data(N, E, C)
-    model = convoys.regression.Exponential(ci=True)
+    model = careovoys.regression.Exponential(ci=True)
     model.fit(X, B, T)
     assert model.cdf([1], float('inf')).shape == ()
     assert 0.80*c < model.cdf([1], float('inf')) < 1.30*c
@@ -89,13 +89,13 @@ def test_exponential_regression_model(c=0.3, lambd=0.1, n=10000):
         assert 0.70*d < (convert_times < t).mean() < 1.30*d
 
     # Fit model without ci
-    model = convoys.regression.Exponential(ci=False)
+    model = careovoys.regression.Exponential(ci=False)
     model.fit(X, B, T)
     assert model.cdf([1], 0).shape == ()
     assert model.cdf([1], [0, 1, 2, 3]).shape == (4,)
 
     # Fit a linear model
-    model = convoys.regression.Exponential(ci=False, flavor='linear')
+    model = careovoys.regression.Exponential(ci=False, flavor='linear')
     model.fit(X, B, T)
     model_c = model.params['map']['b'] + model.params['map']['beta'][0]
     assert 0.9*c < model_c < 1.1*c
@@ -113,7 +113,7 @@ def test_weibull_regression_model(cs=[0.3, 0.5, 0.7],
                      for r in range(n)])
     B, T = generate_censored_data(N, E, C)
 
-    model = convoys.regression.Weibull()
+    model = careovoys.regression.Weibull()
     model.fit(X, B, T)
 
     # Validate shape of results
@@ -128,7 +128,7 @@ def test_weibull_regression_model(cs=[0.3, 0.5, 0.7],
         assert 0.80 * c < model.cdf(x, float('inf')) < 1.30 * c
 
     # Fit a linear model
-    model = convoys.regression.Weibull(ci=False, flavor='linear')
+    model = careovoys.regression.Weibull(ci=False, flavor='linear')
     model.fit(X, B, T)
     model_cs = model.params['map']['b'] + model.params['map']['beta']
     for model_c, c in zip(model_cs, cs):
@@ -144,13 +144,13 @@ def test_gamma_regression_model(c=0.3, lambd=0.1, k=3.0, n=10000):
     E = scipy.stats.gamma.rvs(a=k, scale=1.0/lambd, size=(n,))
     B, T = generate_censored_data(N, E, C)
 
-    model = convoys.regression.Gamma()
+    model = careovoys.regression.Gamma()
     model.fit(X, B, T)
     assert 0.80*c < model.cdf([1], float('inf')) < 1.30*c
     assert 0.80*k < numpy.mean(model.params['map']['k']) < 1.30*k
 
     # Fit a linear model
-    model = convoys.regression.Gamma(ci=False, flavor='linear')
+    model = careovoys.regression.Gamma(ci=False, flavor='linear')
     model.fit(X, B, T)
     model_c = model.params['map']['b'] + model.params['map']['beta'][0]
     assert 0.9*c < model_c < 1.1*c
@@ -167,7 +167,7 @@ def test_linear_model(n=10000, m=5, k=3.0, lambd=0.1):
     E = numpy.array([sample_weibull(k, lambd) for r in range(n)])
     B, T = generate_censored_data(N, E, C)
 
-    model = convoys.regression.Weibull(ci=False, flavor='linear')
+    model = careovoys.regression.Weibull(ci=False, flavor='linear')
     model.fit(X, B, T)
 
     # Check the fitted parameters
@@ -209,7 +209,7 @@ def test_exponential_pooling(c=0.5, lambd=0.01, n=10000, ks=[1, 2, 3]):
     B, T = generate_censored_data(N, E, C)
 
     # Fit model
-    model = convoys.multi.Exponential()
+    model = careovoys.multi.Exponential()
     model.fit(G, B, T)
 
     # Generate predictions for each cohort
@@ -237,18 +237,18 @@ def _generate_dataframe(cs=[0.3, 0.5, 0.7], k=0.5, lambd=0.1, n=1000):
 
 def test_convert_dataframe():
     df = _generate_dataframe()
-    unit, groups, (G, B, T) = convoys.utils.get_arrays(df)
+    unit, groups, (G, B, T) = careovoys.utils.get_arrays(df)
     # TODO: assert things
 
 
 def _test_plot_cohorts(model='weibull', extra_model=None):
     df = _generate_dataframe()
-    unit, groups, (G, B, T) = convoys.utils.get_arrays(df)
+    unit, groups, (G, B, T) = careovoys.utils.get_arrays(df)
     matplotlib.pyplot.clf()
-    convoys.plotting.plot_cohorts(G, B, T, model=model, ci=0.95, groups=groups)
+    careovoys.plotting.plot_cohorts(G, B, T, model=model, ci=0.95, groups=groups)
     matplotlib.pyplot.legend()
     if extra_model:
-        convoys.plotting.plot_cohorts(G, B, T, model=extra_model,
+        careovoys.plotting.plot_cohorts(G, B, T, model=extra_model,
                                       plot_kwargs=dict(linestyle='--',
                                                        alpha=0.1))
     matplotlib.pyplot.savefig('%s-%s.png' % (model, extra_model)
@@ -257,18 +257,18 @@ def _test_plot_cohorts(model='weibull', extra_model=None):
 
 def test_plot_cohorts_model():
     df = _generate_dataframe()
-    unit, groups, (G, B, T) = convoys.utils.get_arrays(df)
-    model = convoys.multi.Exponential(ci=None)
+    unit, groups, (G, B, T) = careovoys.utils.get_arrays(df)
+    model = careovoys.multi.Exponential(ci=None)
     model.fit(G, B, T)
     matplotlib.pyplot.clf()
-    convoys.plotting.plot_cohorts(G, B, T, model=model, groups=groups)
+    careovoys.plotting.plot_cohorts(G, B, T, model=model, groups=groups)
     matplotlib.pyplot.legend()
 
     with pytest.raises(Exception):
-        convoys.plotting.plot_cohorts(G, B, T, model='bad', groups=groups)
+        careovoys.plotting.plot_cohorts(G, B, T, model='bad', groups=groups)
 
     with pytest.raises(Exception):
-        convoys.plotting.plot_cohorts(G, B, T, model=model, groups=groups,
+        careovoys.plotting.plot_cohorts(G, B, T, model=model, groups=groups,
                                       specific_groups=['Nonsense'])
 
 
@@ -289,11 +289,11 @@ def test_plot_cohorts_two_models():
 
 def test_plot_cohorts_subplots():
     df = _generate_dataframe()
-    unit, groups, (G, B, T) = convoys.utils.get_arrays(df)
+    unit, groups, (G, B, T) = careovoys.utils.get_arrays(df)
     matplotlib.pyplot.clf()
     fix, axes = matplotlib.pyplot.subplots(nrows=2, ncols=2)
     for ax in axes.flatten():
-        convoys.plotting.plot_cohorts(G, B, T, groups=groups, ax=ax)
+        careovoys.plotting.plot_cohorts(G, B, T, groups=groups, ax=ax)
         ax.legend()
     matplotlib.pyplot.savefig('subplots.png')
 

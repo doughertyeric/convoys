@@ -1,0 +1,7 @@
+autograd
+autograd-gamma>=0.2.0
+emcee
+matplotlib>=2.0.0
+pandas
+numpy
+scipy

@@ -1,6 +1,6 @@
 import numpy
-from convoys import regression
-from convoys import single
+from careovoys import regression
+from careovoys import single
 
 __all__ = ['KaplanMeier', 'Exponential', 'Weibull', 'Gamma',
            'GeneralizedGamma']
@@ -65,25 +65,25 @@ class SingleToMulti(MultiModel):
 
 
 class Exponential(RegressionToMulti):
-    ''' Multi-group version of :class:`convoys.regression.Exponential`.'''
+    ''' Multi-group version of :class:`careovoys.regression.Exponential`.'''
     _base_model_cls = regression.Exponential
 
 
 class Weibull(RegressionToMulti):
-    ''' Multi-group version of :class:`convoys.regression.Weibull`.'''
+    ''' Multi-group version of :class:`careovoys.regression.Weibull`.'''
     _base_model_cls = regression.Weibull
 
 
 class Gamma(RegressionToMulti):
-    ''' Multi-group version of :class:`convoys.regression.Gamma`.'''
+    ''' Multi-group version of :class:`careovoys.regression.Gamma`.'''
     _base_model_cls = regression.Gamma
 
 
 class GeneralizedGamma(RegressionToMulti):
-    ''' Multi-group version of :class:`convoys.regression.GeneralizedGamma`.'''
+    ''' Multi-group version of :class:`careovoys.regression.GeneralizedGamma`.'''
     _base_model_cls = regression.GeneralizedGamma
 
 
 class KaplanMeier(SingleToMulti):
-    ''' Multi-group version of :class:`convoys.single.KaplanMeier`.'''
+    ''' Multi-group version of :class:`careovoys.single.KaplanMeier`.'''
     _base_model_cls = single.KaplanMeier

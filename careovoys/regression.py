@@ -1,4 +1,4 @@
-from convoys import autograd_scipy_monkeypatch  # NOQA
+from careovoys import autograd_scipy_monkeypatch  # NOQA
 import autograd
 from autograd_gamma import gammainc
 import emcee
@@ -275,7 +275,7 @@ class GeneralizedGamma(RegressionModel):
             'beta': data[6+n_features:6+2*n_features].T,
         } for k, data in result.items()}
 
-    def cdf(self, x, t, ci=None):
+    def cdf(self, x, t, ci=None, limited=True):
         '''Returns the value of the cumulative distribution function
         for a fitted model. TODO: this should probably be renamed
         "predict" in the future to follow the scikit-learn convention.
@@ -298,13 +298,25 @@ class GeneralizedGamma(RegressionModel):
             assert self._ci
             params = self.params['samples']
         lambd = exp(dot(x, params['alpha'].T) + params['a'])
+        
+        if len(x) == 1:
+            print("lambda: " + str(lambd))
+        else:
+            print("lambda: " + str(numpy.mean(lambd)))
         if self._flavor == 'logistic':
             c = expit(dot(x, params['beta'].T) + params['b'])
+            if len(x) == 1:
+                print("c: " + str(c))
+            else:
+                print("c: " + str(numpy.mean(c)))
         elif self._flavor == 'linear':
             c = dot(x, params['beta'].T) + params['b']
-        M = c * gammainc(
-            params['k'],
-            numpy.multiply.outer(t, lambd)**params['p'])
+        if limited:
+            M = c * gammainc(params['k'],
+                numpy.multiply.outer(t, lambd)**params['p'])
+        else:
+            M = gammainc(params['k'],
+                numpy.multiply.outer(t, lambd)**params['p'])
 
         if not ci:
             return M

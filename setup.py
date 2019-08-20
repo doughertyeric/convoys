@@ -9,7 +9,7 @@ or
 .. image:: https://better.engineering/convoys/_images/dob-violations-combined.png
 '''
 
-setup(name='convoys',
+setup(name='careovoys',
       version='0.1.5',
       description='Fit machine learning models to predict conversion using Weibull and Gamma distributions',
       long_description=long_description,

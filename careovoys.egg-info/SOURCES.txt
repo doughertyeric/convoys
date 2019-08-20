@@ -1,0 +1,17 @@
+README.md
+setup.py
+careovoys/__init__.py
+careovoys/autograd_scipy_monkeypatch.py
+careovoys/multi.py
+careovoys/plotting.py
+careovoys/regression.py
+careovoys/single.py
+careovoys/utils.py
+careovoys.egg-info/PKG-INFO
+careovoys.egg-info/SOURCES.txt
+careovoys.egg-info/dependency_links.txt
+careovoys.egg-info/requires.txt
+careovoys.egg-info/top_level.txt
+examples/__init__.py
+examples/dob_violations.py
+examples/marriage.py

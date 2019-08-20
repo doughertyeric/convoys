@@ -1,0 +1,17 @@
+Metadata-Version: 1.0
+Name: careovoys
+Version: 0.1.5
+Summary: Fit machine learning models to predict conversion using Weibull and Gamma distributions
+Home-page: https://better.engineering/convoys
+Author: Erik Bernhardsson
+Author-email: erikbern@better.com
+License: MIT
+Description: 
+        For more information, see
+        `the package documentation <https://better.engineering/convoys>`_
+        or
+        `the Github project page <https://github.com/better/convoys>`_.
+        
+        .. image:: https://better.engineering/convoys/_images/dob-violations-combined.png
+        
+Platform: UNKNOWN
